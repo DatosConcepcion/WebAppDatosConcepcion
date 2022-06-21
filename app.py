@@ -9,6 +9,7 @@ import flask
 import pandas as pd
 import utils
 import re
+import calendar
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -17,8 +18,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.
                 server=server)
 app.title = 'Visualizacion datos contratos publicos'
 
-df = pd.read_csv('https://github.com/LucasLaPietra/WebScraperDatosConcepcion/blob/main/webscraping-app/contratos'
-                 '/contratos-complete.csv?raw=true')
+df = pd.read_csv('https://github.com/LucasLaPietra/WebScraperAppDatosConcepcion/blob/main/contratos/contratos-complete.csv?raw=true')
 
 maxYear = df['Año'].max()
 minYear = df['Año'].min()
@@ -26,6 +26,11 @@ maxFirstYearMonth = df[(df['Año'] == minYear)]['Mes'].max()
 minFirstYearMonth = df[(df['Año'] == minYear)]['Mes'].min()
 maxActualYearMonth = df[(df['Año'] == maxYear)]['Mes'].max()
 minActualYearMonth = df[(df['Año'] == maxYear)]['Mes'].min()
+
+colorScale = [
+    [0, 'rgb(156, 156, 156)'],
+    [1, 'rgb(59, 59, 59)']
+]
 
 topNavBar2 = html.Div(
     dbc.Row(
@@ -111,10 +116,10 @@ revenueTab = dbc.Container(children=[
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='dateRangeRevenue',
-                            min_date_allowed=dt(minYear, minFirstYearMonth, 1),
-                            max_date_allowed=dt(maxYear, maxActualYearMonth, 31),
-                            start_date=dt(maxYear, minActualYearMonth, 1).date(),
-                            end_date=dt(maxYear, maxActualYearMonth, 31).date(),
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
                             display_format='D/M/Y',
                             calendar_orientation='horizontal'),
                         width='auto', align='center')
@@ -204,10 +209,10 @@ providersPaymentTab = dbc.Container(children=[
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='dateRangeProvidersPayment',
-                            min_date_allowed=dt(minYear, minFirstYearMonth, 1),
-                            max_date_allowed=dt(maxYear, maxActualYearMonth, 31),
-                            start_date=dt(maxYear, minActualYearMonth, 1).date(),
-                            end_date=dt(maxYear, maxActualYearMonth, 31).date(),
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
                             display_format='D/M/Y',
                             calendar_orientation='horizontal'),
                         width='auto', align='center')
@@ -297,10 +302,10 @@ expensesEvolutionTab = dbc.Container(children=[
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='dateRangeExpensesEvolution',
-                            min_date_allowed=dt(minYear, minFirstYearMonth, 1),
-                            max_date_allowed=dt(maxYear, maxActualYearMonth, 31),
-                            start_date=dt(maxYear, minActualYearMonth, 1).date(),
-                            end_date=dt(maxYear, maxActualYearMonth, 31).date(),
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
                             display_format='D/M/Y',
                             calendar_orientation='horizontal'),
                         width='auto', align='center')
@@ -381,10 +386,10 @@ providersRankingTab = dbc.Container(children=[
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='dateRangeProvidersRanking',
-                            min_date_allowed=dt(minYear, minFirstYearMonth, 1),
-                            max_date_allowed=dt(maxYear, maxActualYearMonth, 31),
-                            start_date=dt(maxYear, minActualYearMonth, 1).date(),
-                            end_date=dt(maxYear, maxActualYearMonth, 31).date(),
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
                             display_format='D/M/Y',
                             calendar_orientation='horizontal'),
                         width='auto', align='center')
@@ -414,6 +419,96 @@ providersRankingTab = dbc.Container(children=[
     )
 ], className="h-100 p-5 bg-light border rounded-3")
 
+publicWorkTab = dbc.Container(children=[
+    dbc.Row(
+        [
+            dbc.Col([
+                html.H2('RANKING DE CONTRATACIONES DE OBRA PUBLICA'),
+            ], className='tab-title'
+            ),
+            dbc.Col([
+                dbc.Row([
+                    dbc.Col(
+                        dcc.DatePickerRange(
+                            id='dateRangePublicWork',
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
+                            display_format='D/M/Y',
+                            calendar_orientation='horizontal'),
+                        width='auto', align='center')
+                    ,
+                    dbc.Col(
+                        dbc.Button(html.I(className="bi bi-arrow-right"), color="primary",
+                                   id='publicWorkDateButton'),
+                        width='auto', align='center'
+                    )
+
+                ],
+                    justify="end", className='date-row'
+                ),
+                dbc.Row(
+                    dbc.Col(
+                        html.P("Para aplicar cambios en las fechas seleccionadas, hacer clic en →"),
+                        className='date-legend'
+                    ),
+                    justify="end"
+                ),
+            ], className='date-col'
+            )],
+        justify="center"
+    ),
+    dbc.Row(
+        justify="center", className='centered-table', id='publicWorkTable'
+    )
+], className="h-100 p-5 bg-light border rounded-3")
+
+officialAdvertisingTab = dbc.Container(children=[
+    dbc.Row(
+        [
+            dbc.Col([
+                html.H2('RANKING DE CONTRATACIONES DE PUBLICIDAD OFICIAL'),
+            ], className='tab-title'
+            ),
+            dbc.Col([
+                dbc.Row([
+                    dbc.Col(
+                        dcc.DatePickerRange(
+                            id='dateRangeOfficialAdvertising',
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
+                            display_format='D/M/Y',
+                            calendar_orientation='horizontal'),
+                        width='auto', align='center')
+                    ,
+                    dbc.Col(
+                        dbc.Button(html.I(className="bi bi-arrow-right"), color="primary",
+                                   id='officialAdvertisingDateButton'),
+                        width='auto', align='center'
+                    )
+
+                ],
+                    justify="end", className='date-row'
+                ),
+                dbc.Row(
+                    dbc.Col(
+                        html.P("Para aplicar cambios en las fechas seleccionadas, hacer clic en →"),
+                        className='date-legend'
+                    ),
+                    justify="end"
+                ),
+            ], className='date-col'
+            )],
+        justify="center"
+    ),
+    dbc.Row(
+        justify="center", className='centered-table', id='officialAdvertisingTable'
+    )
+], className="h-100 p-5 bg-light border rounded-3")
+
 providersSearchTab = dbc.Container(children=[
     dbc.Row(
         [
@@ -427,10 +522,10 @@ providersSearchTab = dbc.Container(children=[
                     dbc.Col(
                         dcc.DatePickerRange(
                             id='dateRangeProvidersSearch',
-                            min_date_allowed=dt(minYear, minFirstYearMonth, 1),
-                            max_date_allowed=dt(maxYear, maxActualYearMonth, 31),
-                            start_date=dt(maxYear, minActualYearMonth, 1).date(),
-                            end_date=dt(maxYear, maxActualYearMonth, 31).date(),
+                            min_date_allowed=dt(minYear, minFirstYearMonth, calendar.monthrange(minYear, minFirstYearMonth)[0]),
+                            max_date_allowed=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]),
+                            start_date=dt(maxYear, minActualYearMonth, calendar.monthrange(maxYear, minActualYearMonth)[0]).date(),
+                            end_date=dt(maxYear, maxActualYearMonth, calendar.monthrange(maxYear, maxActualYearMonth)[1]).date(),
                             display_format='D/M/Y',
                             calendar_orientation='horizontal'),
                         width='auto', align='center')
@@ -511,6 +606,8 @@ body = html.Div(
         dbc.Row(dbc.Col(revenueTab), className="app-container"),
         dbc.Row(dbc.Col(providersPaymentTab), className="app-container"),
         dbc.Row(dbc.Col(providersRankingTab), className="app-container"),
+        dbc.Row(dbc.Col(publicWorkTab), className="app-container"),
+        dbc.Row(dbc.Col(officialAdvertisingTab), className="app-container"),
         dbc.Row(dbc.Col(expensesEvolutionTab), className="app-container"),
         dbc.Row(dbc.Col(providersSearchTab), className="app-container")
     ]
@@ -537,13 +634,8 @@ def update_figure(initial_date, final_date, button, date_button):
     filtered_df = utils.filter_by_date(df, initial_date, final_date)
     revenue_data = utils.revenue_data(filtered_df)
     if ctx.triggered[0]['prop_id'] == 'revenueDownloadButton.n_clicks':
-        df_to_download = pd.DataFrame({'Metrica':
-                                           ['Total de ordenes de compra por',
-                                            'Cantidad de proveedores',
-                                            'Cantidad de ordenes de compra'],
-                                       'Valor': revenue_data})
         return "$" + str('{0:,}'.format(revenue_data[0])), '{0:,}'.format(revenue_data[1]), '{0:,}'.format(
-            revenue_data[2]), dcc.send_data_frame(df_to_download.to_csv, "data.csv")
+            revenue_data[2]), dcc.send_data_frame(filtered_df.to_csv, "data.csv", index=False)
     else:
         if (ctx.triggered[0]['prop_id'] != 'dateRangeRevenue.start_date') and \
                 (ctx.triggered[0]['prop_id'] != 'dateRangeRevenue.end_date'):
@@ -573,10 +665,10 @@ def update_figure(initial_date, final_date, category, slider, button, date_butto
     fig_providers_payment = px.bar(df_limited, x="Importe", y="Nombre Fantasia", labels={
         "Nombre Fantasia": "proveedor",
         "Importe": "Dinero percibido",
-    }, color_continuous_scale="Viridis", color="Importe", orientation='h')
+    }, color_continuous_scale=colorScale, color="Importe", orientation='h')
 
     if ctx.triggered[0]['prop_id'] == 'providersPaymentDownloadButton.n_clicks':
-        return fig_providers_payment, dict_filter, dcc.send_data_frame(df_limited.to_csv, "data.csv"), \
+        return fig_providers_payment, dict_filter, dcc.send_data_frame(df_limited.to_csv, "data.csv", index=False), \
                len(df_filtered_by_category)
     else:
         if (ctx.triggered[0]['prop_id'] != 'dateRangeProvidersPayment.start_date') and \
@@ -613,7 +705,7 @@ def update_figure(initial_date, final_date, selected_categories, button, date_bu
             "Importe": "Dinero",
         })
     if ctx.triggered[0]['prop_id'] == 'expensesEvolutionDownloadButton.n_clicks':
-        return fig_expenses_evolution, dict_filter, dcc.send_data_frame(df_new.to_csv, "data.csv")
+        return fig_expenses_evolution, dict_filter, dcc.send_data_frame(df_new.to_csv, "data.csv", index=False)
     else:
         if (ctx.triggered[0]['prop_id'] != 'dateRangeExpensesEvolution.start_date') and \
                 (ctx.triggered[0]['prop_id'] != 'dateRangeExpensesEvolution.end_date'):
@@ -632,6 +724,52 @@ def update_figure(initial_date, final_date, date_button):
     final_date = dt.strptime(re.split('T| ', final_date)[0], '%Y-%m-%d')
     filtered_df = utils.filter_by_date(df, initial_date, final_date)
     table_df = utils.create_ranking_table_df(filtered_df)
+    table = dbc.Table.from_dataframe(
+        table_df,
+        bordered=True,
+        hover=True,
+        responsive=True,
+        striped=True)
+    if (ctx.triggered[0]['prop_id'] != 'dateRangeProvidersRanking.start_date') and \
+            (ctx.triggered[0]['prop_id'] != 'dateRangeProvidersRanking.end_date'):
+        return table
+    else:
+        return dash.no_update
+
+
+@app.callback(Output('publicWorkTable', 'children'),
+              [Input('dateRangePublicWork', 'start_date'), Input('dateRangePublicWork', 'end_date'),
+               Input('publicWorkDateButton', 'n_clicks')]
+              )
+def update_figure(initial_date, final_date, date_button):
+    ctx = dash.callback_context
+    initial_date = dt.strptime(re.split('T| ', initial_date)[0], '%Y-%m-%d')
+    final_date = dt.strptime(re.split('T| ', final_date)[0], '%Y-%m-%d')
+    filtered_df = utils.filter_by_date(df, initial_date, final_date)
+    table_df = utils.create_ranking_table_category_df(filtered_df, 'SERVICIO OBRA PUBLICA')
+    table = dbc.Table.from_dataframe(
+        table_df,
+        bordered=True,
+        hover=True,
+        responsive=True,
+        striped=True)
+    if (ctx.triggered[0]['prop_id'] != 'dateRangeProvidersRanking.start_date') and \
+            (ctx.triggered[0]['prop_id'] != 'dateRangeProvidersRanking.end_date'):
+        return table
+    else:
+        return dash.no_update
+
+
+@app.callback(Output('officialAdvertisingTable', 'children'),
+              [Input('dateRangeOfficialAdvertising', 'start_date'), Input('dateRangeOfficialAdvertising', 'end_date'),
+               Input('officialAdvertisingDateButton', 'n_clicks')]
+              )
+def update_figure(initial_date, final_date, date_button):
+    ctx = dash.callback_context
+    initial_date = dt.strptime(re.split('T| ', initial_date)[0], '%Y-%m-%d')
+    final_date = dt.strptime(re.split('T| ', final_date)[0], '%Y-%m-%d')
+    filtered_df = utils.filter_by_date(df, initial_date, final_date)
+    table_df = utils.create_ranking_table_category_df(filtered_df, 'PUBLICIDAD')
     table = dbc.Table.from_dataframe(
         table_df,
         bordered=True,
