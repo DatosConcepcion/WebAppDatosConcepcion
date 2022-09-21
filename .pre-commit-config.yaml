@@ -1,0 +1,34 @@
+repos:
+  # For frontend
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: "v8.23.1"
+    hooks:
+      - id: eslint
+        args: [--fix, -c, frontend/.eslintrc.cjs]
+        files: \.(svelte)$
+        exclude: scraper/
+        additional_dependencies:
+          - eslint@8.23.1
+          - eslint-config-prettier@8.5.0
+          - eslint-plugin-svelte3@v4.0.0
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v2.7.1"
+    hooks:
+      - id: prettier
+        args: [--config, frontend/.prettierrc]
+        files: \.(svelte)$
+        exclude: scraper/
+
+  # For scraper
+  - repo: https://github.com/ambv/black
+    rev: "22.8.0"
+    hooks:
+      - id: black
+        exclude: frontend/
+        language_version: python3.9
+  - repo: https://gitlab.com/PyCQA/flake8
+    rev: "5.0.4"
+    hooks:
+      - id: flake8
+        exclude: frontend/
+        language_version: python3.9

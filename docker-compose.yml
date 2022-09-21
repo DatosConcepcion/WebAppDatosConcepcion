@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  frontend:
+    build: frontend
+    command: npm run dev
+    volumes:
+      - ./frontend:/app
+      - ./scraper/data:/app/static/data:ro
+    ports:
+      - 3000:5173
+
+  scraper:
+    build: scraper
+    volumes:
+      - ./scraper:/app

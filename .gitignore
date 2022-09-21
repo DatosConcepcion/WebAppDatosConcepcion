@@ -1,5 +1,14 @@
-venv
-*.pyc
 .DS_Store
 .env
-.idea
+.env.*
+!.env.sample
+
+# For js
+node_modules
+frontend/build
+frontend/.svelte-kit
+frontend/package
+
+# For python
+__pycache__
+.ipynb_checkpoints
