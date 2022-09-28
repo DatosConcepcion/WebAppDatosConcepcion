@@ -1,12 +1,4 @@
 <script lang="ts">
-	type Column = {
-		name: string;
-		key: string;
-	};
-	type Row = {
-		[key: string]: string | number;
-	};
-
 	import { onMount } from 'svelte';
 	import ArrowUp from 'svelte-material-icons/ArrowUp.svelte';
 	import ChevronUp from 'svelte-material-icons/ChevronUp.svelte';
@@ -19,11 +11,12 @@
 	export let sortAsc: boolean = true;
 	export let perPage: number = 15;
 
+	let table: HTMLElement;
 	let totalPages: number = 0;
 	let currentPage: number = 0;
 	let filterRows: Row[] = [];
 
-	const handleClick = (key: string) => {
+	const handleSort = (key: string) => {
 		if ((sortBy = key)) {
 			sortAsc = !sortAsc;
 		} else {
@@ -39,6 +32,13 @@
 		currentPage = 0;
 	};
 
+	const hadlePaginate = (newPage: number) => {
+		currentPage = newPage;
+		table.scrollIntoView({
+			behavior: 'smooth'
+		});
+	};
+
 	$: filterRows = rows.slice(currentPage * perPage, (currentPage + 1) * perPage);
 	$: totalPages = Math.round(rows.length / perPage) - 1;
 
@@ -47,20 +47,21 @@
 	});
 </script>
 
-<div class="text-body">
+<div bind:this={table} class="font-body pt-4">
+	<slot />
 	<div class="flex md:hidden mb-2">
 		<select
 			bind:value={sortBy}
-			on:change={() => handleClick(sortBy)}
+			on:change={() => handleSort(sortBy)}
 			class="flex-1 px-3 py-1.5 text-gray-999999 font-medium rounded-l-md border border-solid border-gray"
 		>
 			{#each columns as col}
 				<option value={col.key}>
-					{col.name}
+					{col.label}
 				</option>
 			{/each}
 		</select>
-		<button on:click={() => handleClick(sortBy)} class="p-2 rounded-r-md bg-coral">
+		<button on:click={() => handleSort(sortBy)} class="p-2 rounded-r-md bg-coral">
 			<div class="w-4 h-4 transition-all" class:rotate-180={!sortAsc}>
 				<ArrowUp width="16" height="16" color="white" />
 			</div>
@@ -73,14 +74,15 @@
 				{#each columns as col, i}
 					<td
 						class="text-gray-999999 font-medium text-lg px-3 py-2 cursor-pointer"
+						style={'width' in col ? `width: ${col.width}px` : ''}
 						class:pl-4={i === 0}
 						class:rounded-l-md={i === 0}
 						class:pr-4={i === columns.length - 1}
 						class:rounded-r-md={i === columns.length - 1}
-						on:click={() => handleClick(col.key)}
+						on:click={() => handleSort(col.key)}
 					>
-						<div class="flex items-center">
-							<span>{col.name}</span>
+						<div class="flex items-center justify-start">
+							<span>{col.label}</span>
 							<div class="w-4 h-4 ml-2 transition-all" class:rotate-180={!sortAsc}>
 								{#if sortBy === col.key}
 									<ArrowUp width="16" height="16" />
@@ -93,10 +95,12 @@
 		</thead>
 		<tbody>
 			{#each filterRows as row}
-				<tr class="block md:table-row mb-2 rounded-md bg-white text-end hover:shadow-lg">
+				<tr
+					class="block md:table-row mb-2 rounded-md bg-white text-end md:text-start hover:shadow-lg"
+				>
 					{#each columns as col, i}
 						<td
-							data-label={col.name}
+							data-label={col.label}
 							class="text-gray-333333 font-light flex md:table-cell justify-between px-3 py-2"
 							class:pl-4={i === 0}
 							class:rounded-l-md={i === 0}
@@ -112,18 +116,14 @@
 	</table>
 
 	<div class="flex justify-end mt-2">
-		<PageButton page="1" active={currentPage === 0} onClick={() => (currentPage = 0)} />
+		<PageButton page="1" active={currentPage === 0} onClick={() => hadlePaginate(0)} />
 		{#if ![0, totalPages].includes(currentPage)}
-			<PageButton
-				page={currentPage + 1}
-				active={true}
-				onClick={() => (currentPage = currentPage)}
-			/>
+			<PageButton page={currentPage + 1} active={true} onClick={() => hadlePaginate(currentPage)} />
 		{/if}
 		<PageButton
 			page={totalPages + 1}
 			active={currentPage === totalPages}
-			onClick={() => (currentPage = totalPages)}
+			onClick={() => hadlePaginate(totalPages)}
 		/>
 		<button
 			type="button"
@@ -131,7 +131,7 @@
 			class:bg-gray={currentPage === 0}
 			class:cursor-not-allowed={currentPage === 0}
 			disabled={currentPage === 0}
-			on:click={() => (currentPage -= 1)}
+			on:click={() => hadlePaginate(currentPage - 1)}
 		>
 			<ChevronUp width="24" height="24" color={currentPage === 0 ? '#7a7a7a' : '#333333'} />
 		</button>
@@ -141,7 +141,7 @@
 			class:bg-gray={currentPage === totalPages}
 			class:cursor-not-allowed={currentPage === totalPages}
 			disabled={currentPage === totalPages}
-			on:click={() => (currentPage += 1)}
+			on:click={() => hadlePaginate(currentPage + 1)}
 		>
 			<ChevronUp
 				width="24"
@@ -159,11 +159,7 @@
 
 			&:before {
 				content: attr(data-label);
-				padding-right: 0.5em;
-				text-align: left;
-				font-weight: 500;
-				font-family: Roboto;
-				color: #999999;
+				@apply pr-2 text-left font-medium text-gray-999999;
 			}
 		}
 	}
